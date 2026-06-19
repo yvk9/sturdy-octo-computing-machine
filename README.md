@@ -1,4 +1,4 @@
-# 🤖 Local AI Job-Search Automation — n8n + Ollama (100% Private)
+# Local AI Job-Search Automation — n8n + Ollama (100% Private)
 
 A self-hosted, fully local pipeline that **finds remote jobs, scores them against my profile with a local LLM, and emails me only the strong matches** — every morning, automatically. No OpenAI key, no cloud AI, no data leaving my machine.
 
@@ -10,33 +10,33 @@ A self-hosted, fully local pipeline that **finds remote jobs, scores them agains
 
 ---
 
-## ✨ What it does
+##  What it does
 
 Instead of manually searching job boards every day, this workflow:
 
-- ⏰ **Triggers daily** on a schedule (n8n Cron).
-- 🌐 **Fetches job listings** via the Decodo Scraping API.
-- 🧠 **Scores each job 0–100** against my candidate profile using a **local Ollama model** acting as a professional recruiter (returns structured JSON).
-- 🔎 **Filters** to keep only matches with `fit_score > 50`.
-- 📊 **Logs results to Google Sheets** (de-duplicated by job URL).
-- 📧 **Emails me** each qualifying match with the score, reasoning, and apply link.
+-  **Triggers daily** on a schedule (n8n Cron).
+-  **Fetches job listings** via the Decodo Scraping API.
+-  **Scores each job 0–100** against my candidate profile using a **local Ollama model** acting as a professional recruiter (returns structured JSON).
+-  **Filters** to keep only matches with `fit_score > 50`.
+-  **Logs results to Google Sheets** (de-duplicated by job URL).
+-  **Emails me** each qualifying match with the score, reasoning, and apply link.
 
 The AI runs entirely on my own hardware — the only things that leave the laptop are the job-board fetch and the Google/Gmail sync I explicitly authorize.
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 
 ```mermaid
 flowchart LR
-    A[⏰ Daily Cron Trigger] --> B[📄 Load Candidate Profile<br/>Google Sheets]
-    B --> C[🌐 Fetch Jobs<br/>Decodo API]
-    C --> D[🔧 Prepare Jobs<br/>Code node]
-    D --> E[🧠 Score Job<br/>Ollama Chat Model]
-    E --> F[🔧 Parse JSON<br/>Code node]
+    A[ Daily Cron Trigger] --> B[ Load Candidate Profile<br/>Google Sheets]
+    B --> C[ Fetch Jobs<br/>Decodo API]
+    C --> D[ Prepare Jobs<br/>Code node]
+    D --> E[ Score Job<br/>Ollama Chat Model]
+    E --> F[ Parse JSON<br/>Code node]
     F --> G{fit_score > 50?}
-    G -- yes --> H[📊 Save to Google Sheets]
-    H --> I[📧 Gmail Notification]
+    G -- yes --> H[ Save to Google Sheets]
+    H --> I[ Gmail Notification]
     G -- no --> X[discard]
 ```
 
@@ -44,7 +44,7 @@ The two services run as containers on a shared Docker bridge network, so n8n rea
 
 ```mermaid
 flowchart TB
-    subgraph Docker["🐳 Docker Compose (jobnet bridge)"]
+    subgraph Docker[" Docker Compose (jobnet bridge)"]
         N[n8n :5678] -->|http://ollama:11434| O[Ollama :11434]
     end
     User([You]) -->|localhost:5678| N
@@ -52,7 +52,7 @@ flowchart TB
 
 ---
 
-## 🧰 Tech stack
+##  Tech stack
 
 | Layer | Tool |
 |---|---|
@@ -65,7 +65,7 @@ flowchart TB
 
 ---
 
-## 🚀 Quick start
+##  Quick start
 
 ```bash
 # 1. Clone
@@ -89,7 +89,7 @@ Full, beginner-friendly instructions (credentials, Google Sheets, troubleshootin
 
 ---
 
-## 📂 Repository contents
+##  Repository contents
 
 | File | Purpose |
 |---|---|
@@ -99,11 +99,11 @@ Full, beginner-friendly instructions (credentials, Google Sheets, troubleshootin
 | `SETUP-GUIDE.md` | Detailed step-by-step setup + troubleshooting |
 | `.env.example` | Sample configuration |
 
-> 🔒 **Security:** No credentials are stored in this repo. n8n keeps API keys/OAuth tokens encrypted inside its own Docker volume (`n8n_data`, gitignored). The workflow JSON contains only placeholder credential references.
+>  **Security:** No credentials are stored in this repo. n8n keeps API keys/OAuth tokens encrypted inside its own Docker volume (`n8n_data`, gitignored). The workflow JSON contains only placeholder credential references.
 
 ---
 
-## 🧠 What I learned building this
+##  What I learned building this
 
 - **Container networking:** why `localhost` fails between containers and how a shared Docker bridge + service-name DNS (`http://ollama:11434`) solves it.
 - **Running LLMs locally** with Ollama and wiring them into n8n's LangChain nodes instead of a paid API.
@@ -113,7 +113,7 @@ Full, beginner-friendly instructions (credentials, Google Sheets, troubleshootin
 
 ---
 
-## 🔮 Possible next steps
+##  Possible next steps
 
 - "Only notify me about **new** jobs" de-duplication layer.
 - Multiple job sources / search queries.
@@ -122,6 +122,6 @@ Full, beginner-friendly instructions (credentials, Google Sheets, troubleshootin
 
 ---
 
-## 📜 License
+##  License
 
 MIT — see [LICENSE](LICENSE). Built with n8n + Ollama + Decodo + Google Sheets + Gmail.
