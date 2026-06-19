@@ -1,0 +1,78 @@
+# ============================================================
+#  Local, private AI job-search stack: n8n + Ollama
+#  Windows 11 + Docker Desktop (WSL2)
+#  n8n calls Ollama internally at:  http://ollama:11434
+# ============================================================
+# Quick start (PowerShell, from this folder):
+#   docker compose up -d
+#   docker exec -it ollama ollama pull llama3.1:8b
+# Open n8n:  http://localhost:5678
+# ============================================================
+
+services:
+  # ---------------- Ollama (local LLM server) ----------------
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    networks:
+      - jobnet
+    ports:
+      # Optional: lets you test Ollama from the host browser/CLI.
+      # n8n does NOT need this — it talks over the internal network.
+      - "11434:11434"
+    volumes:
+      # Persists downloaded models so you don't re-pull after a restart.
+      - ollama_data:/root/.ollama
+    # --- OPTIONAL NVIDIA GPU ACCELERATION ---
+    # Uncomment the block below ONLY if you have an NVIDIA GPU + the
+    # NVIDIA Container Toolkit working inside WSL2. Otherwise leave it
+    # commented and Ollama will run fine on CPU.
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  # ---------------- n8n (workflow automation) ----------------
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    networks:
+      - jobnet
+    ports:
+      - "5678:5678"
+    environment:
+      # --- Base config ---
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=America/New_York        # <-- change to your timezone
+      - TZ=America/New_York                       # <-- change to your timezone
+
+      # --- This is the important one ---
+      # The Ollama credential inside n8n should use this base URL.
+      - OLLAMA_HOST=http://ollama:11434
+
+      # --- Quality-of-life / stability ---
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - N8N_RUNNERS_ENABLED=true
+      - N8N_SECURE_COOKIE=false               # allows http://localhost login
+      - NODE_FUNCTION_ALLOW_EXTERNAL=*        # lets Code node use libs if needed
+    volumes:
+      # Persists your workflows, credentials, and execution history.
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      - ollama
+
+networks:
+  jobnet:
+    driver: bridge
+
+volumes:
+  ollama_data:
+  n8n_data:

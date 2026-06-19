@@ -1,0 +1,27 @@
+# ---- Secrets & environment ----
+.env
+.env.local
+*.local
+secrets/
+credentials.json
+*credentials*.json
+*-credentials.*
+
+# ---- n8n runtime data (NEVER commit — contains your encrypted credentials) ----
+n8n_data/
+.n8n/
+ollama_data/
+
+# ---- OS junk ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Editor ----
+.vscode/
+.idea/
+*.swp
+
+# ---- Logs ----
+*.log
+logs/
