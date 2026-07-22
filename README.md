@@ -1,4 +1,4 @@
-# Local AI Job-Search Automation — n8n + Ollama (100% Private)
+# Local AI Job-Search Automation n8n + Ollama (100% Private)
 
 A self-hosted, fully local pipeline that **finds remote jobs, scores them against my profile with a local LLM, and emails me only the strong matches** — every morning, automatically. No OpenAI key, no cloud AI, no data leaving my machine.
 
